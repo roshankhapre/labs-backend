@@ -20,7 +20,10 @@ const app = express();
 // ✅ CORS setup
 app.use(
   cors({
-    origin: "http://localhost:5173", // frontend
+    origin: [
+      "http://localhost:5173", // local frontend (dev)
+      "https://labs-frontend-ashen.vercel.app", // deployed frontend (prod)
+    ],
     credentials: true,
   })
 );
@@ -33,7 +36,6 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/packages", labPackageRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
-
 
 app.get("/", (req, res) => {
   res.send("Lab Booking API Running");
