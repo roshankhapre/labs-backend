@@ -4,7 +4,7 @@ import express from "express";
 import cors from "cors";
 import connectDB from "./config/db.js";
 
-import authRoutes from "./routes/authRoutes.js";
+//import authRoutes from "./routes/authRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import labPackageRoutes from "./routes/labPackageRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
@@ -31,7 +31,7 @@ app.use(
 app.use(express.json());
 
 // ✅ Routes
-app.use("/api/auth", authRoutes);
+//app.use("/api/auth", authRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/packages", labPackageRoutes);
 app.use("/api/bookings", bookingRoutes);
