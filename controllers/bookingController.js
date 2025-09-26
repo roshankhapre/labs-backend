@@ -1,6 +1,9 @@
 import Booking from "../models/bookingModel.js";
-import User from "../models/userModel.js";
-import { sendBookingEmail, sendAdminNotification } from "../utils/email.js";
+import {
+  sendBookingEmail,
+  sendAdminNotification,
+  generateBookingID,
+} from "../utils/email.js";
 
 // @desc Public booking (without packages)
 export const createPublicBooking = async (req, res) => {
@@ -15,11 +18,15 @@ export const createPublicBooking = async (req, res) => {
       appointmentDate,
       appointmentTime,
       paymentInfo,
-      amount, // ✅ get from frontend (in INR)
+      amount,
     } = req.body;
 
-    // Create booking
+    // ✅ GENERATE SINGLE BOOKING ID
+    const bookingId = generateBookingID();
+
+    // Create booking with the SAME bookingId
     const booking = new Booking({
+      bookingId, // ✅ Store the booking ID
       name,
       email,
       phone,
@@ -31,30 +38,42 @@ export const createPublicBooking = async (req, res) => {
         razorpayOrderId: paymentInfo?.razorpay_order_id,
         razorpaySignature: paymentInfo?.razorpay_signature,
       },
-      paidAmount: amount || 0, // ✅ store actual amount
+      paidAmount: amount || 0,
       paymentStatus: "Paid",
       status: "Pending",
     });
 
     await booking.save();
 
-    // Send email to user
+    // ✅ Send emails with the SAME bookingId
     try {
+      // Send email to user
       await sendBookingEmail({
         to: email,
         name,
+        phone,
+        address,
+        appointmentDate,
+        appointmentTime,
+        bookingId, // ✅ Same ID
       });
     } catch (userEmailError) {
       console.error("User email failed:", userEmailError);
     }
 
-    // Send notification to admin
     try {
-      await sendAdminNotification({
-        name,
-        email,
-        phone,
-      });
+      // Send notification to admin
+      await sendAdminNotification(
+        {
+          name,
+          email,
+          phone,
+          address,
+          appointmentDate,
+          appointmentTime,
+        },
+        bookingId
+      ); // ✅ Same ID
     } catch (adminEmailError) {
       console.error("Admin email failed:", adminEmailError);
     }
@@ -62,6 +81,7 @@ export const createPublicBooking = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Booking successful",
+      bookingId: bookingId, // ✅ Return the SAME ID to frontend
       booking,
     });
   } catch (error) {

@@ -2,6 +2,13 @@ import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
   {
+    // ✅ ADD BOOKING ID FIELD
+    bookingId: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -15,8 +22,6 @@ const bookingSchema = new mongoose.Schema(
 
     appointmentDate: String,
     appointmentTime: String,
-
-    // ❌ Removed package field
 
     paymentInfo: {
       razorpayPaymentId: String,
