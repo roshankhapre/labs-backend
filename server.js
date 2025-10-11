@@ -22,7 +22,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173", // local frontend (dev)
-      "https://www.suyogpathologyandlaboratory.com", // deployed frontend (prod)
+      "https://labs-frontend-ashen.vercel.app", // deployed frontend (prod)
     ],
     credentials: true,
   })
